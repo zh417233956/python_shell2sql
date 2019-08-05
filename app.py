@@ -3,15 +3,13 @@ import subprocess
 
 
 def system_command(command):
-    process = subprocess.Popen(command,
-                               stdout=subprocess.PIPE,
-                               stderr=None,
-                               shell=True)
-    result = process.stdout.readlines()
     lists = []
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
+    # for line in iter(process.stdout.readline, 'b'):
+    result = process.stdout.readlines()
     for line in result:
         output = line.decode('gbk')
-        # print(output)
+        print(output)
         lists.append(output)
     return lists
 
@@ -45,9 +43,18 @@ if __name__ == "__main__":
                 # print(repr({tableHead[index]: tr[index].strip()}) + "\r\n")
                 pass
             tableBody.append(trRow)
-            result = system_command('d:/sln/python/Shell2TSql/shell/redis.sh')
-            # rediscli = 'redis-cli -h 127.0.0.1 -p 6379 SET User_list_1 "{\"UserId\": \"1\", \"UserName\": \"钟海\", \"orgid\": \"22\", \"flag\": \"1\", \"isjjr\": \"9\", \"RzRuzhiDate\": \"2019-07-11 14:55:01.690\", \"lasttime\": \"2019-07-11 14:55:01.690\", \"CompanyId\": \"1\"}"'
-            # res = system_command(rediscli)
+            jsonStr = repr(trRow).replace("'", "\\\"")
+            redisCli = "redis-cli --raw -h 127.0.0.1 -p 6379 -n 1 SET " + "User_list_" + tr[
+                0].strip() + " \"" + jsonStr + "\""
+            system_command(redisCli)
+
+            # # 使用redis.sh传参数
+            # jsonStr = repr(trRow).replace("'", "\"").replace(": ", ":").replace(", ", ",").replace(" ", "\\T")
+            # print(jsonStr)
+            # system_command([
+            #     'd:/sln/python/Shell2TSql/shell/redis.sh',
+            #     "User_list_" + tr[0].strip(), "'" + jsonStr + "'"
+            # ])
             pass
         pass
     print(tableBody)
