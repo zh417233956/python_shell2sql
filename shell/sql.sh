@@ -6,9 +6,11 @@ PASS_WORD="123456"
 DBNAME="Demo"
 TABLE_NAME=$1
 TABLE_NAME=${TABLE_NAME:-"User_list"}
-select_sql="select * from ${TABLE_NAME}" 
-sqlcmd -S ${HOST_NAME} -U ${USER_NAME} -P ${PASS_WORD} -d ${DBNAME} -q "${select_sql}"
-# sqlcmd -U sa -P 123456 -d "Demo" -Q "select * from User_list"
+select_sql="select * from ${TABLE_NAME}"
+# sqlcmd -S ${HOST_NAME} -U ${USER_NAME} -P ${PASS_WORD} -d ${DBNAME} -q "${select_sql}"
+sqlcmd -U sa -P 123456 -d "Demo" -Q "DECLARE @return_value int; EXEC @return_value = [dbo].[procTest];print @return_value"
+RETN="$?"
+echo $RETN
 }
 exe_secelt $1
 
